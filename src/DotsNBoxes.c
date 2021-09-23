@@ -6,13 +6,16 @@
 
 void Welcome(int* size2,int* size, char* name)
 {
+	char a;
 	printf("Bienvenido ingrese su nombre: \n");
 	scanf("%s",name);
 	printf("Seleccione el tamaño de la matriz, desde 3 hasta 15: \n");
+	while((a=getchar()) != EOF && a != '\n');
 	scanf("%d", size);
 	while(*size<3  || *size>15)
 	{
 		printf("Seleccione el tamaño de la matriz, desde 3 hasta 15: \n");
+		while((a=getchar()) != EOF && a != '\n');
 		scanf("%d",size);
 	}
 	*size2=*size;
@@ -70,10 +73,13 @@ void PrintBoard(int size,char board[TAM_NORMAL][TAM_NORMAL])
 void PlayerMove(int* x,int* y,char board[TAM_NORMAL][TAM_NORMAL])
 {
 	//El jugador elije la fila y columna
+	char a;
 	printf("JUEGA USTED \n");
 	printf("Elija en que fila poner \n");
+	while((a=getchar()) != EOF && a != '\n');
 	scanf("%d",x);
 	printf("Elija en que columna poner \n");
+	while((a=getchar()) != EOF && a != '\n');
 	scanf("%d",y);
 	*y=*y-1;
 	*x=*x-1;
@@ -82,8 +88,10 @@ void PlayerMove(int* x,int* y,char board[TAM_NORMAL][TAM_NORMAL])
 	{
 		printf("Jugada no disponible \n");
 		printf("Elija en que fila poner \n");
+		while((a=getchar()) != EOF && a != '\n');
 		scanf("%d",x);
 		printf("Elija en que columna poner \n");
+		while((a=getchar()) != EOF && a != '\n');
 		scanf("%d",y);
 		*y=*y-1;
 		*x=*x-1;
@@ -94,19 +102,21 @@ void PlayerMove(int* x,int* y,char board[TAM_NORMAL][TAM_NORMAL])
 		board[*x][*y]='|';
 	}
 }
-void Marksquare(int* size,int T,int* x,int* y,int* PCx,int* PCy,char board[TAM_NORMAL][TAM_NORMAL])
+void Marksquare(int* Comp,int* User,int* R,int* size,int T,int* x,int* y,int* PCx,int* PCy,char board[TAM_NORMAL][TAM_NORMAL])
 {
-	int i,j;
+	int i,j,f;
 	char Q[0];
 	if (T==0)
 	{
 		i=*x;
 		j=*y;
 		Q[0]='J';
+		f=1;
 	}else{
 		i=*PCx;
 		j=*PCy;
 		Q[0]='P';
+		f=0;
 	}
 	if (board[i-1][j-1]=='|')           //si el ultimo movimineto es abajo
 	{
@@ -118,13 +128,18 @@ void Marksquare(int* size,int T,int* x,int* y,int* PCx,int* PCy,char board[TAM_N
 				{
 					board[i-1][j]=Q[0];
 					printf("Felicidades tiene 1 cuadrado \n");
+					*R=1;
+					if (f==1)
+						*User=*User+1;
+					if (f==0)
+						*Comp=*Comp+1;
 				}
 			}
 		}
 	}
-	if (board[i-1][j+1]=='-')           //si el ultimo movimineto es arriba
+	if (board[i+1][j-1]=='|')           //si el ultimo movimineto es arriba
 	{
-		if (board[i+2][j]=='|')
+		if (board[i+2][j]=='-')
 		{
 			if (board[i+1][j+1]=='|')
 			{
@@ -132,6 +147,11 @@ void Marksquare(int* size,int T,int* x,int* y,int* PCx,int* PCy,char board[TAM_N
 				{
 					board[i+1][j]=Q[0];
 					printf("Felicidades tiene 1 cuadrado \n");
+					*R=1;
+					if (f==1)
+						*User=*User+1;
+					if (f==0)
+						*Comp=*Comp+1;
 				}
 			}
 		}
@@ -146,6 +166,11 @@ void Marksquare(int* size,int T,int* x,int* y,int* PCx,int* PCy,char board[TAM_N
 				{
 					board[i][j-1]=Q[0];
 					printf("Felicidades tiene 1 cuadrado \n");
+					*R=1;
+					if (f==1)
+						*User=*User+1;
+					if (f==0)
+						*Comp=*Comp+1;
 				}
 			}
 		}
@@ -160,6 +185,11 @@ void Marksquare(int* size,int T,int* x,int* y,int* PCx,int* PCy,char board[TAM_N
 				{
 					board[i][j+1]=Q[0];
 					printf("Felicidades tiene 1 cuadrado \n");
+					*R=1;
+					if (f==1)
+						*User=*User+1;
+					if (f==0)
+						*Comp=*Comp+1;
 				}
 			}
 		}
@@ -196,7 +226,9 @@ int WhoStarts(){
 void main(){
 	int size,size2,i,Starts;
 	int Jogadas=0;
-	int x,y,PCx,PCy,T;
+	int x,y,PCx,PCy,T,R;
+	int User=0;
+	int Comp=0;
 	char name[TAM_NORMAL];
 	//int GameMode;
 	char Board[TAM_NORMAL][TAM_NORMAL];
@@ -241,32 +273,103 @@ void main(){
 	{
 		if (Starts==0)                    //Empieza jugador
 		{
+			R=0;
 			PlayerMove(&x,&y,Board);
 			printf("Jugada Jugador \n");
-			i++;
 			T=0;
-			Marksquare(&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
+			Marksquare(&Comp,&User,&R,&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
 			PrintBoard(size,Board);      //Primera Jugada
+			while (R==1)
+			{
+				R=0;
+				PlayerMove(&x,&y,Board);
+				printf("Jugada Jugador \n");
+				T=0;
+				Marksquare(&Comp,&User,&R,&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
+				PrintBoard(size,Board);      //Primera Jugada
+				i++;
+				if (i>=Jogadas)
+					break;
+			}
+			i++;
+			if (i>=Jogadas)
+				break;
 			printf("Jugada Pc \n");
 			PcMove(&PCx,&PCy,size,Board);
-			i++;
 			T=1;
-			Marksquare(&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
+			Marksquare(&Comp,&User,&R,&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
 			PrintBoard(size,Board);      //Segunda Jugada
+			printf("i %d \n",i);
+			while (R==1)          //Se repite
+			{
+				R=0;
+				printf("Jugada Pc \n");
+				PcMove(&PCx,&PCy,size,Board);
+				T=1;
+				Marksquare(&Comp,&User,&R,&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
+				PrintBoard(size,Board);      //Segunda Jugada
+				i++;
+				if (i>=Jogadas)
+					break;
+				printf("i %d \n",i);
+			}
+			i++;
+			if (i>=Jogadas)
+				break;
+			printf("i %d \n",i);
 		}else{                           //Empieza Pc
 			printf("Jugada Pc \n");
 			PcMove(&PCx,&PCy,size,Board);
-			i++;
 			T=1;
-			Marksquare(&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
-			PrintBoard(size,Board);      //Segunda Jugada
+			Marksquare(&Comp,&User,&R,&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
+			PrintBoard(size,Board);      //Primera Jugada
+			printf("i %d \n",i);
+			while (R==1)          //Si cierra un cuadrado se repite
+			{
+				R=0;
+				printf("Jugada Pc \n");
+				PcMove(&PCx,&PCy,size,Board);
+				T=1;
+				Marksquare(&Comp,&User,&R,&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
+				PrintBoard(size,Board);
+				i++;
+				if (i==Jogadas)
+					break;
+				printf("i %d \n",i);
+			}
+			i++;
+			if (i>=Jogadas)
+				break;
+			printf("i %d \n",i);
 			PlayerMove(&x,&y,Board);
 			printf("Jugada Jugador \n");
-			i++;
 			T=0;
-			Marksquare(&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
-			PrintBoard(size,Board);      //Primera Jugada
+			Marksquare(&Comp,&User,&R,&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
+			PrintBoard(size,Board);      //Segunda Jugada
+			printf("i %d \n",i);
+			while (R==1)         //Si cierra un cuadrado se repite
+			{
+				R=0;
+				PlayerMove(&x,&y,Board);
+				printf("Jugada Jugador \n");
+				T=0;
+				Marksquare(&Comp,&User,&R,&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
+				PrintBoard(size,Board);
+				i++;
+				if (i>=Jogadas)
+					break;
+				printf("i %d \n",i);
+			}
+			i++;
+			if (i>=Jogadas)
+				break;
+			printf("i %d \n",i);
 		}
 	}
-	printf("Termino");
+	if (Comp<User)
+		printf("Gano usted %d a %d",User,Comp);
+	if(User<Comp)
+		printf("Gano la Pc %d a %d",Comp,User);
+	if(User==Comp)
+		printf("Empataron %d a %d",Comp,User);
 }
