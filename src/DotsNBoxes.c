@@ -213,15 +213,46 @@ void PcMove(int* PCx,int* PCy,int size,char board[TAM_NORMAL][TAM_NORMAL])
 			board[*PCx][*PCy]='|';
 		}
 }
-int WhoStarts(){
-	srand(time(NULL));
-	int Turn=rand() % 2;
-	if (Turn==0){
-		printf("EMPIEZA USTED \n");
-	}else{
-		printf("EMPIEZA LA PC \n");
+void WhoStarts(int* Starts)
+{
+	char a;
+	printf("Elija si quiere:\n");
+	printf("1-Si empieza el jugador\n");
+	printf("2-Si empieza la PC\n");
+	printf("3-Aleatorio\n");
+	while((a=getchar()) != EOF && a != '\n');
+	scanf("%d", Starts);
+	while(*Starts<1 || *Starts>3)
+	{
+		printf("Opcion no disponible\n");
+		printf("Elija si quiere:\n");
+		printf("1-Si empieza el jugador\n");
+		printf("2-Si empieza la PC\n");
+		printf("3-Aleatorio\n");
+		while((a=getchar()) != EOF && a != '\n');
+		scanf("%d", Starts);
 	}
-	return Turn;
+	if(*Starts==1)
+	{
+		printf("EMPIEZA USTED \n");
+		*Starts=0;
+	}
+	if(*Starts==2)
+	{
+		printf("EMPIEZA LA PC \n");
+		*Starts=1;
+	}
+	if(*Starts==3)
+	{
+		srand(time(NULL));
+		int Turn=rand() % 2;
+		if (Turn==0){
+			printf("EMPIEZA USTED \n");
+		}else{
+			printf("EMPIEZA LA PC \n");
+		}
+		*Starts=Turn;
+	}
 }
 void main(){
 	int size,size2,i,Starts;
@@ -235,6 +266,7 @@ void main(){
 	Welcome(&size2,&size,name);
 	//Mode(&GameMode);
 	CreateBoard(size,Board);
+	WhoStarts(&Starts); 			//Se elije quien empieza.
 	PrintBoard(size,Board);
 	/*switch (GameMode)
 	{
@@ -264,11 +296,10 @@ void main(){
 	{
 		Jogadas=i*i*4-Jogadas;
 	}
-	printf("Cantidad de Jugadas %d \n",Jogadas);
+	//printf("Cantidad de Jugadas %d \n\n",Jogadas);
 	i=0;
-	printf("Tamano real %d \n",size);
-	printf("Tamano visual %d \n\n",size2);
-	Starts=WhoStarts();                    //Se elije quien empieza.0-Jugador.1-Pc
+	//printf("Tamano real %d \n",size);
+	//printf("Tamano visual %d \n\n",size2);
 	while (i<Jogadas)
 	{
 		if (Starts==0)                    //Empieza jugador
@@ -279,6 +310,11 @@ void main(){
 			T=0;
 			Marksquare(&Comp,&User,&R,&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
 			PrintBoard(size,Board);      //Primera Jugada
+			i++;
+			printf("Jugada numero %d \n",i);
+			printf("\n");
+			if (i>=Jogadas)
+				break;
 			while (R==1)
 			{
 				R=0;
@@ -290,8 +326,9 @@ void main(){
 				i++;
 				if (i>=Jogadas)
 					break;
+				printf("Jugada numero %d \n",i);
+				printf("\n");
 			}
-			i++;
 			if (i>=Jogadas)
 				break;
 			printf("Jugada Pc \n");
@@ -299,7 +336,11 @@ void main(){
 			T=1;
 			Marksquare(&Comp,&User,&R,&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
 			PrintBoard(size,Board);      //Segunda Jugada
-			printf("i %d \n",i);
+			i++;
+			printf("Jugada numero %d \n",i);
+			printf("\n");
+			if (i>=Jogadas)
+				break;
 			while (R==1)          //Se repite
 			{
 				R=0;
@@ -311,19 +352,22 @@ void main(){
 				i++;
 				if (i>=Jogadas)
 					break;
-				printf("i %d \n",i);
+				printf("Jugada numero %d \n",i);
+				printf("\n");
 			}
-			i++;
 			if (i>=Jogadas)
 				break;
-			printf("i %d \n",i);
 		}else{                           //Empieza Pc
 			printf("Jugada Pc \n");
 			PcMove(&PCx,&PCy,size,Board);
 			T=1;
 			Marksquare(&Comp,&User,&R,&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
 			PrintBoard(size,Board);      //Primera Jugada
-			printf("i %d \n",i);
+			i++;
+			printf("Jugada numero %d \n",i);
+			printf("\n");
+			if (i>=Jogadas)
+				break;
 			while (R==1)          //Si cierra un cuadrado se repite
 			{
 				R=0;
@@ -335,18 +379,21 @@ void main(){
 				i++;
 				if (i==Jogadas)
 					break;
-				printf("i %d \n",i);
+				printf("Jugada numero %d \n",i);
+				printf("\n");
 			}
-			i++;
 			if (i>=Jogadas)
 				break;
-			printf("i %d \n",i);
 			PlayerMove(&x,&y,Board);
 			printf("Jugada Jugador \n");
 			T=0;
 			Marksquare(&Comp,&User,&R,&size,T,&x,&y,&PCx,&PCy,Board);  //control de marca
 			PrintBoard(size,Board);      //Segunda Jugada
-			printf("i %d \n",i);
+			i++;
+			if (i>=Jogadas)
+				break;
+			printf("Jugada numero %d \n",i);
+			printf("\n");
 			while (R==1)         //Si cierra un cuadrado se repite
 			{
 				R=0;
@@ -358,12 +405,11 @@ void main(){
 				i++;
 				if (i>=Jogadas)
 					break;
-				printf("i %d \n",i);
+				printf("Jugada numero %d \n",i);
+				printf("\n");
 			}
-			i++;
 			if (i>=Jogadas)
 				break;
-			printf("i %d \n",i);
 		}
 	}
 	if (Comp<User)
